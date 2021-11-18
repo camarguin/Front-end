@@ -1,9 +1,18 @@
-import React, { useState, Fragment } from 'react'
+import axios from 'axios'
+import React, { useState, useEffect } from 'react'
 import AddUserForm from './forms/AddUserForm'
 import EditUserForm from './forms/EditUserForm'
 import UserTable from './tables/UserTable'
 
+const API_ENDPOINT = 'http://localhost:8090'
+
 const App = () => {
+
+	useEffect(() => {
+		axios.get(`${API_ENDPOINT}/personais`)
+			.then((response) => console.log(response))
+	}, [])
+
 	// Data
 	const usersData = [
 
@@ -19,7 +28,13 @@ const App = () => {
 	// CRUD operations
 	const addUser = user => {
 		user.id = users.length + 1
-		setUsers([...users, user])
+		// setUsers([...users, user])
+		const response = await fetch(`${API_ENDPOINT}/personais`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(user)
+		})
+		return await response.json();
 	}
 
 	const deleteUser = id => {
@@ -45,9 +60,9 @@ const App = () => {
 			<h3><font size="12"><font color="black">Perfect Trainer </font></font></h3>
 			<h1><font size="6"><font color="black">Encontre o seu personal aqui! </font></font></h1>
 			<div className="flex-row">
-				<div className="flex-large">
+				<div>
 					{editing ? (
-						<Fragment>
+						<>
 							<h2>Edit user</h2>
 							<EditUserForm
 								editing={editing}
@@ -55,12 +70,12 @@ const App = () => {
 								currentUser={currentUser}
 								updateUser={updateUser}
 							/>
-						</Fragment>
+						</>
 					) : (
-						<Fragment>
+						<>
 							<h2>Cadastrar Personal</h2>
 							<AddUserForm addUser={addUser} />
-						</Fragment>
+						</>
 					)}
 				</div>
 				<div className="flex-large">
